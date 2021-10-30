@@ -14,7 +14,7 @@ labels=double(label);
 data = Feats ;  % your data   
 labels1=categorical(label);
 
-%% ** train-test splitting **
+> train-test splitting
 %cv  = cvpartition(size(data,1), "HoldOut", 0.2);
 %train_split=cv.training;
 %test_split=cv.test;
