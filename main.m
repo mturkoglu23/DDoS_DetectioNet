@@ -11,11 +11,10 @@ end
 Feats=Feats';
 labels=double(label);
 
-%%
 data = Feats ;  % your data   
 labels1=categorical(label);
 
-%% train-test splitting
+%% ** train-test splitting **
 %cv  = cvpartition(size(data,1), "HoldOut", 0.2);
 %train_split=cv.training;
 %test_split=cv.test;
@@ -27,7 +26,7 @@ Feats_test = data(test_split, :);
 labels_test = labels1(test_split, :);
 
 
-%% Model Setup
+%% ** Model Setup **
 inputSize = 1;
 numClasses = 4;
 lgraph = layerGraph();
@@ -59,7 +58,7 @@ lgraph = connectLayers(lgraph,"sequence","lstm");
 lgraph = connectLayers(lgraph,"dropout_1","addition/in1");
 lgraph = connectLayers(lgraph,"dropout_2","addition/in2");
 
-%% Parameter setting
+%% ** Parameter setting **
  options = trainingOptions('adam', ...
     'MaxEpochs',50, ...
     'MiniBatchSize', 16, ...
@@ -67,12 +66,12 @@ lgraph = connectLayers(lgraph,"dropout_2","addition/in2");
     'SequenceLength', 89, ...
      'Verbose',false);
 
-%% Training of the proposed parallel based RNNs model 
+%% ** Training of the proposed parallel based RNNs model **
 net = trainNetwork(Feats_train,labels_train,lgraph,options);
 
 
-%% The second stage of the proposed model
-% Feature Extraction
+%% ** The second stage of the proposed model **
+% ** Feature Extraction **
 for i=1:length(Feats_train)
 value=Feats_train{i};
 layer='addition';
@@ -85,7 +84,7 @@ layer='addition';
 feat_test(:,i) = activations(net,value,layer);
 end
 
-% Classification with SVM method
+% ** Classification with SVM method **
 featuresTrain=feat_train';
 YTrain=double(labels_train);
 featuresTest=feat_test';
@@ -102,7 +101,7 @@ classifier = fitcecoc(featuresTrain,YTrain,...
     'Learners', template,...
     'Coding', 'onevsall');
 
-% Testing of proposed parallel RNNs based SVM model
+% ** Testing of proposed parallel RNNs based SVM model **
 YPred = predict(classifier,featuresTest);
 accuracy = mean(YPred == YTest);
 fprintf('Result: %d', accuracy)
